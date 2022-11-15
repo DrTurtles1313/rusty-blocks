@@ -83,17 +83,14 @@ fn render(rl: &mut RaylibHandle, thread: &RaylibThread, game_state: &GameState) 
     }
 }
 
-fn tick(game_state: &mut GameState, rl: &mut RaylibHandle)
-{
+fn tick(game_state: &mut GameState, rl: &mut RaylibHandle) {
     match rl.get_key_pressed() {
         None => (),
-        Some(x) =>{
-            match x {
-                KeyboardKey::KEY_D => try_move(game_state, 1, 0),
-                KeyboardKey::KEY_A => try_move(game_state, -1, 0),
-                KeyboardKey::KEY_S => try_move(game_state, 0, 1),
-                _ => (),
-            }
+        Some(x) => match x {
+            KeyboardKey::KEY_D => try_move(game_state, 1, 0),
+            KeyboardKey::KEY_A => try_move(game_state, -1, 0),
+            KeyboardKey::KEY_S => try_move(game_state, 0, 1),
+            _ => (),
         },
     }
 }
@@ -101,12 +98,17 @@ fn tick(game_state: &mut GameState, rl: &mut RaylibHandle)
 fn try_move(game_state: &mut GameState, dx: i32, dy: i32) {
     let new_x = game_state.block.pos_x + dx;
     let new_y = game_state.block.pos_y + dy;
+    println!("{}", new_y);
 
     for (x, row) in game_state.block.shape.iter().enumerate() {
         for (y, col) in row.iter().enumerate() {
             if *col == 1 {
-                if game_state.landed[x + new_x as usize][y + new_y as usize]
-                {
+                if new_y as usize + y > 15 {
+                    land_block(game_state);
+                    return;
+                }
+                if game_state.landed[x + new_x as usize][y + new_y as usize] {
+                    land_block(game_state);
                     return;
                 }
             }
@@ -115,4 +117,17 @@ fn try_move(game_state: &mut GameState, dx: i32, dy: i32) {
 
     game_state.block.pos_y += dy;
     game_state.block.pos_x += dx;
+}
+
+fn land_block(game_state: &mut GameState) {
+    for (x, row) in game_state.block.shape.iter().enumerate() {
+        for (y, col) in row.iter().enumerate() {
+            if *col == 1 {
+                game_state.landed[game_state.block.pos_x as usize + x]
+                    [game_state.block.pos_y as usize + y] = true;
+            }
+        }
+    }
+
+    game_state.block = Block::new_square();
 }
