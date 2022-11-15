@@ -1,5 +1,8 @@
 use raylib::prelude::*;
 
+mod blocks;
+use blocks::*;
+
 const PIXEL_RESOLUTION_X: i32 = 10;
 const PIXEL_RESOLUTION_Y: i32 = 16;
 const RES_MULTIPLIER: i32 = 16;
@@ -15,24 +18,6 @@ impl GameState {
             landed: [[false; 16]; 10],
             block: Block::new_square(),
         }
-    }
-}
-
-struct Block {
-    pos_x: i32,
-    pos_y: i32,
-    shape: [[i32; 4]; 4],
-}
-
-impl Block {
-    fn new_square() -> Block {
-        let block = Block {
-            pos_x: 0,
-            pos_y: 0,
-            shape: [[1, 1, 0, 0], [1, 1, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
-        };
-
-        block
     }
 }
 
@@ -103,6 +88,9 @@ fn try_move(game_state: &mut GameState, dx: i32, dy: i32) {
     for (x, row) in game_state.block.shape.iter().enumerate() {
         for (y, col) in row.iter().enumerate() {
             if *col == 1 {
+                if new_x as usize + x > 9 {
+                    return;
+                }
                 if new_y as usize + y > 15 {
                     land_block(game_state);
                     return;
