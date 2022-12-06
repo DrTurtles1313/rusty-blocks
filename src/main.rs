@@ -1,4 +1,5 @@
 use raylib::prelude::*;
+use rand::prelude::*;
 
 mod blocks;
 use blocks::*;
@@ -22,7 +23,7 @@ impl GameState {
             landed: [[false; 16]; 10],
             block: Block::new(BlockTypes::I),
             time: 0.0,
-            current_tick_time: 1.5,
+            current_tick_time: 1.0,
         }
     }
 }
@@ -164,5 +165,17 @@ fn land_block(game_state: &mut GameState) {
         }
     }
 
-    game_state.block = Block::new(BlockTypes::O);
+    let mut rng = thread_rng();
+    let block_type = rng.gen_range(0..7);
+    
+    match block_type {
+        0 => game_state.block = Block::new(BlockTypes::I),
+        1 => game_state.block = Block::new(BlockTypes::O),
+        2 => game_state.block = Block::new(BlockTypes::T),
+        3 => game_state.block = Block::new(BlockTypes::S),
+        4 => game_state.block = Block::new(BlockTypes::Z),
+        5 => game_state.block = Block::new(BlockTypes::L),
+        6 => game_state.block = Block::new(BlockTypes::J),
+        _ =>  ()
+    }
 }

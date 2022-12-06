@@ -1,12 +1,11 @@
-
 pub enum BlockTypes {
-    I,
-    O,
-    T,
-    S,
-    Z,
-    L,
-    J,
+    I = 0,
+    O = 1,
+    T = 2,
+    S = 3,
+    Z = 4,
+    L = 5,
+    J = 6,
 }
 
 pub static I_ROTATIONS: [[[i32; 4]; 4]; 2] = [
