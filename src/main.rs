@@ -12,6 +12,8 @@ const RES_MULTIPLIER: i32 = 32;
 pub struct GameState {
     landed: [[bool; 16]; 10],
     block: Block,
+    time: f32,
+    current_tick_time: f32,
 }
 
 impl GameState {
@@ -19,6 +21,8 @@ impl GameState {
         GameState {
             landed: [[false; 16]; 10],
             block: Block::new(BlockTypes::I),
+            time: 0.0,
+            current_tick_time: 1.5,
         }
     }
 }
@@ -33,6 +37,7 @@ fn main() {
         .build();
 
     let mut game_state = GameState::new();
+    rl.set_target_fps(60);
 
     while !rl.window_should_close() {
         render(&mut rl, &thread, &game_state);
@@ -74,6 +79,7 @@ fn render(rl: &mut RaylibHandle, thread: &RaylibThread, game_state: &GameState) 
             }
         }
     }
+
 }
 
 /// Main game tick functions
@@ -84,11 +90,17 @@ fn tick(game_state: &mut GameState, rl: &mut RaylibHandle) {
         Some(x) => match x {
             KeyboardKey::KEY_D => try_move(game_state, 1, 0),
             KeyboardKey::KEY_A => try_move(game_state, -1, 0),
-            KeyboardKey::KEY_S => try_move(game_state, 0, 1),
             KeyboardKey::KEY_J => try_rotate(game_state, false),
             KeyboardKey::KEY_K => try_rotate(game_state, true),
             _ => (),
         },
+    }
+    
+    game_state.time += rl.get_frame_time();
+
+    if game_state.time >= game_state.current_tick_time {
+        game_state.time = 0.0;
+        try_move(game_state, 0, 1)
     }
 }
 
